@@ -25,7 +25,6 @@ namespace GeneticSearch
             StreamReader reader = new StreamReader(filename);
             List<Command> commands = new List<Command>();
             Command command = new Command { name = String.Empty, parameter1 = String.Empty, parameter2 = String.Empty };
-            
             while (!reader.EndOfStream)
             {
                 string? line = reader.ReadLine();
@@ -75,9 +74,71 @@ namespace GeneticSearch
             return decoded;
         }
 
-        static void Search(List<Protein> proteins, string sequence, StreamWriter writer, int commandNumber) => throw new NotImplementedException();
-        static void Diff(List<Protein> proteins, string protein1Name, string protein2Name, StreamWriter writer, int commandNumber) => throw new NotImplementedException();
-        static void Mode(List<Protein> proteins, string proteinName, StreamWriter writer, int commandNumber) => throw new NotImplementedException();
+        static void Search(List<Protein> proteins, string sequence, StreamWriter writer, int commandNumber)
+        {
+            string decodedSequence = Decoding(sequence);
+            writer.WriteLine("{0:D3}   search   {1}", commandNumber, decodedSequence);
+            writer.WriteLine("organism\t\t\tprotein");
+            bool found = false;
+            foreach (Protein protein in proteins)
+            {
+                if (protein.amino_acids.Contains(decodedSequence))
+                {
+                    writer.WriteLine("{0}\t\t{1}", protein.organism, protein.name);
+                    found = true;
+                }
+            }
+            if (!found) writer.WriteLine("NOT FOUND");
+            writer.WriteLine("--------------------------------------------------------------------------");
+        }
+
+        static void Diff(List<Protein> proteins, string protein1Name, string protein2Name, StreamWriter writer, int commandNumber)
+        {
+            writer.WriteLine("{0:D3}   diff   {1}   {2}", commandNumber, protein1Name, protein2Name);
+            writer.WriteLine("amino-acids difference:");
+            Protein? protein1 = null, protein2 = null;
+            foreach (Protein protein in proteins)
+            {
+                if (protein.name == protein1Name) protein1 = protein;
+                if (protein.name == protein2Name) protein2 = protein;
+            }
+            if (protein1 == null && protein2 == null) writer.WriteLine("MISSING: {0}, {1}", protein1Name, protein2Name);
+            else if (protein1 == null) writer.WriteLine("MISSING: {0}", protein1Name);
+            else if (protein2 == null) writer.WriteLine("MISSING: {0}", protein2Name);
+            else
+            {
+                string seq1 = protein1.Value.amino_acids;
+                string seq2 = protein2.Value.amino_acids;
+                int diff = 0, maxLen = Math.Max(seq1.Length, seq2.Length);
+                for (int i = 0; i < maxLen; i++)
+                    if (i >= seq1.Length || i >= seq2.Length || seq1[i] != seq2[i]) diff++;
+                writer.WriteLine(diff);
+            }
+            writer.WriteLine("--------------------------------------------------------------------------");
+        }
+
+        static void Mode(List<Protein> proteins, string proteinName, StreamWriter writer, int commandNumber)
+        {
+            writer.WriteLine("{0:D3}   mode   {1}", commandNumber, proteinName);
+            writer.WriteLine("amino-acid occurs:");
+            Protein? protein = null;
+            foreach (Protein p in proteins) if (p.name == proteinName) protein = p;
+            
+            if (protein == null) writer.WriteLine("MISSING: {0}", proteinName);
+            else
+            {
+                string seq = protein.Value.amino_acids;
+                Dictionary<char, int> counts = new Dictionary<char, int>();
+                foreach (char ch in seq) counts[ch] = counts.ContainsKey(ch) ? counts[ch] + 1 : 1;
+                
+                int maxCount = 0; char maxChar = ' ';
+                foreach (var kvp in counts)
+                    if (kvp.Value > maxCount || (kvp.Value == maxCount && kvp.Key < maxChar)) { maxCount = kvp.Value; maxChar = kvp.Key; }
+                writer.WriteLine("{0}          {1}", maxChar, maxCount);
+            }
+            writer.WriteLine("--------------------------------------------------------------------------");
+        }
+
         static void CommandHandler(List<Protein> proteins, List<Command> commands, string outputFile) => throw new NotImplementedException();
 
         static void Main(string[] args)
@@ -87,21 +148,14 @@ namespace GeneticSearch
             string? choice = Console.ReadLine();
             int fileNumber = (choice != null && int.TryParse(choice, out int num) && num >= 1 && num <= 3) ? num - 1 : 0;
             
-            string sequencesFile = $"sequences.{fileNumber}.txt";
-            string commandsFile = $"commands.{fileNumber}.txt";
-            
             try
             {
-                List<Protein> data = ReadData(sequencesFile);
-                Console.WriteLine($"✓ Загружено белков: {data.Count}");
-                List<Command> commands = ReadCommands(commandsFile);
-                Console.WriteLine($"✓ Загружено команд: {commands.Count}");
-                Console.WriteLine("\n[СТАТУС] Данные успешно загружены и декодер готов. Алгоритмы поиска будут добавлены далее.");
+                List<Protein> data = ReadData($"sequences.{fileNumber}.txt");
+                List<Command> commands = ReadCommands($"commands.{fileNumber}.txt");
+                Console.WriteLine($"✓ Загружено: {data.Count} белков, {commands.Count} команд.");
+                Console.WriteLine("[СТАТУС] Алгоритмы Search, Diff и Mode реализованы. Осталось связать их в CommandHandler.");
             }
-            catch (FileNotFoundException ex)
-            {
-                Console.WriteLine($"\n✗ Ошибка: файл не найден - {ex.FileName}");
-            }
+            catch (FileNotFoundException ex) { Console.WriteLine($"\n✗ Ошибка: файл не найден - {ex.FileName}"); }
             Console.WriteLine("\nНажмите любую клавишу для выхода...");
             Console.ReadKey();
         }
