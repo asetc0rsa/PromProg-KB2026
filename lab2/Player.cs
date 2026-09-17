@@ -23,7 +23,7 @@ public class Player
         else
         {
             distanceTraveled += Math.Abs(steps);
-            
+ 
             int idx = location - 1;
             idx = (idx + steps) % fieldSize;
             

@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\lab2\\lab2.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\PromProg-KB2026\\lab2\\lab2.csproj",
       "projectName": "lab2",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\lab2\\lab2.csproj",
+      "projectPath": "C:\\Users\\Admin\\Desktop\\PromProg-KB2026\\lab2\\lab2.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\lab2\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Desktop\\PromProg-KB2026\\lab2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
