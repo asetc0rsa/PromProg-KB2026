@@ -8,10 +8,10 @@ public class Game
     public Player mouse;
     public GameState state;
 
-    public static string InputFile = "1.ChaseData.txt";
-    public static string OutFile = "1.PursuitLog.txt";
+    public static string InputFile = "ChaseData.txt";
+    public static string OutFile = "PursuitLog.txt";
 
-    private StreamWriter writer;
+    private StreamWriter writer = null!; 
 
     public Game(int size)
     {
@@ -26,14 +26,14 @@ public class Game
         using (StreamReader reader = new StreamReader(InputFile))
         using (writer = new StreamWriter(OutFile))
         {
-            reader.ReadLine();
+            reader.ReadLine(); 
 
             writer.WriteLine("Cat and Mouse");
             writer.WriteLine();
             writer.WriteLine(string.Format("{0,3}{1,6}{2,10}", "Cat", "Mouse", "Distance"));
             writer.WriteLine("-------------------");
 
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null && state != GameState.End)
             {
                 line = line.Trim();
@@ -94,6 +94,7 @@ public class Game
     {
         string catStr = cat.state == State.NotInGame ? "??" : cat.location.ToString();
         string mouseStr = mouse.state == State.NotInGame ? "??" : mouse.location.ToString();
+        
         string distStr = (cat.state != State.NotInGame && mouse.state != State.NotInGame) ? GetDistance().ToString() : "";
 
         writer.WriteLine(string.Format("{0,3}{1,6}{2,10}", catStr, mouseStr, distStr));

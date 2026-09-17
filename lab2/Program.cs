@@ -17,7 +17,7 @@ class Program
         int fieldSize = 0;
         using (StreamReader reader = new StreamReader(Game.InputFile))
         {
-            string firstLine = reader.ReadLine();
+            string? firstLine = reader.ReadLine();
             if (firstLine != null)
             {
                 fieldSize = int.Parse(firstLine.Trim());
