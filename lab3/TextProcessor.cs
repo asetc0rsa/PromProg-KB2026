@@ -75,4 +75,15 @@ public class TextProcessor
         }
         Console.WriteLine($"\nXML сохранен в {filePath}");
     }
+
+    public void PrintConcordance(Text text)
+    {
+        var concordance = text.BuildConcordance();
+        foreach (var entry in concordance)
+        {
+            string wordWithDots = entry.Key.PadRight(35, '.');
+            string lines = string.Join(" ", entry.Value.LineNumbers);
+            Console.WriteLine($"{wordWithDots}{entry.Value.Count}: {lines}");
+        }
+    }
 }

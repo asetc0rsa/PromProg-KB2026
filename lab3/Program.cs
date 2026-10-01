@@ -27,6 +27,7 @@ class Program
         ExecuteTask5_ReplaceWordsInSentence(text, 0, 5, "REPLACED");
         ExecuteTask6_RemoveStopWords(text, "stopwords_ru.txt", "stopwords_en.txt");
         ExecuteTask7_ExportToXml(text, "output.xml");
+        ExecuteTask8_PrintConcordance(text);
     }
 
     private static void ExecuteTask1_SortByWordCount(Text text)
@@ -73,6 +74,12 @@ class Program
     {
         Console.WriteLine("\n=== 7. Экспорт в XML ===");
         Processor.ExportToXml(text, outputPath);
+    }
+
+    private static void ExecuteTask8_PrintConcordance(Text text)
+    {
+        Console.WriteLine("\n=== 8. Построение конкорданса ===");
+        Processor.PrintConcordance(text);
     }
 
     private static HashSet<string> LoadStopWords(string ruPath, string enPath)
