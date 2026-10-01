@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 
 public class TextProcessor
 {
@@ -54,5 +56,23 @@ public class TextProcessor
                 sentence.Tokens[i] = new Word { Value = substring };
             }
         }
+    }
+
+    public void RemoveStopWords(Text text, HashSet<string> stopWords)
+    {
+        foreach (var sentence in text.Sentences)
+        {
+            sentence.Tokens.RemoveAll(t => t is Word w && stopWords.Contains(w.Value.ToLower()));
+        }
+    }
+
+    public void ExportToXml(Text text, string filePath)
+    {
+        var serializer = new XmlSerializer(typeof(Text));
+        using (var writer = new StreamWriter(filePath))
+        {
+            serializer.Serialize(writer, text);
+        }
+        Console.WriteLine($"\nXML сохранен в {filePath}");
     }
 }
