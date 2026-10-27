@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "yRfcXkWVegY=",
+  "success": true,
+  "projectFilePath": "/home/c0rsa/Desktop/PromProg-KB2026/lab6/lab6.csproj",
+  "expectedPackageFiles": [
+    "/home/c0rsa/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.13/microsoft.aspnetcore.app.ref.10.0.13.nupkg.sha512"
+  ],
+  "logs": []
+}
