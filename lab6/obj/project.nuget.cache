@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "nmwApMmW7Wk=",
+  "dgSpecHash": "5n9wn6SCup0=",
   "success": true,
-  "projectFilePath": "/home/c0rsa/Desktop/lab6_gitflow/2-planes/lab6.csproj",
+  "projectFilePath": "/home/c0rsa/Desktop/lab6_gitflow/3-airline/lab6.csproj",
   "expectedPackageFiles": [
     "/home/c0rsa/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.13/microsoft.aspnetcore.app.ref.10.0.13.nupkg.sha512"
   ],

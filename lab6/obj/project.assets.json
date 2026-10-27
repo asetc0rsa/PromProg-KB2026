@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/c0rsa/Desktop/lab6_gitflow/2-planes/lab6.csproj",
+      "projectUniqueName": "/home/c0rsa/Desktop/lab6_gitflow/3-airline/lab6.csproj",
       "projectName": "lab6",
-      "projectPath": "/home/c0rsa/Desktop/lab6_gitflow/2-planes/lab6.csproj",
+      "projectPath": "/home/c0rsa/Desktop/lab6_gitflow/3-airline/lab6.csproj",
       "packagesPath": "/home/c0rsa/.nuget/packages/",
-      "outputPath": "/home/c0rsa/Desktop/lab6_gitflow/2-planes/obj/",
+      "outputPath": "/home/c0rsa/Desktop/lab6_gitflow/3-airline/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/c0rsa/.nuget/NuGet/NuGet.Config"
