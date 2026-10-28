@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/c0rsa/Desktop/lab6_gitflow/4-builder/lab6.csproj": {}
+    "/home/c0rsa/Desktop/PromProg-KB2026/lab6/lab6.csproj": {}
   },
   "projects": {
-    "/home/c0rsa/Desktop/lab6_gitflow/4-builder/lab6.csproj": {
+    "/home/c0rsa/Desktop/PromProg-KB2026/lab6/lab6.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/c0rsa/Desktop/lab6_gitflow/4-builder/lab6.csproj",
+        "projectUniqueName": "/home/c0rsa/Desktop/PromProg-KB2026/lab6/lab6.csproj",
         "projectName": "lab6",
-        "projectPath": "/home/c0rsa/Desktop/lab6_gitflow/4-builder/lab6.csproj",
+        "projectPath": "/home/c0rsa/Desktop/PromProg-KB2026/lab6/lab6.csproj",
         "packagesPath": "/home/c0rsa/.nuget/packages/",
-        "outputPath": "/home/c0rsa/Desktop/lab6_gitflow/4-builder/obj/",
+        "outputPath": "/home/c0rsa/Desktop/PromProg-KB2026/lab6/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/c0rsa/.nuget/NuGet/NuGet.Config"
