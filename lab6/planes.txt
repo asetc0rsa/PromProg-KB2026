@@ -1,0 +1,7 @@
+SkyLines Air
+pass Boeing-737 5500 850 180
+pass Airbus-A320 6100 900 150
+pass Superjet-100 3000 700 87
+pass Boeing-777 9700 1100 300
+cargo An-124 4500 1300 120
+cargo Boeing-747F 8300 1000 113
