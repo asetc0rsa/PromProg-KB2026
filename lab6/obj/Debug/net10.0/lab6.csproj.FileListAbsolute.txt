@@ -12,3 +12,4 @@
 /home/c0rsa/Desktop/PromProg-KB2026/lab6/obj/Debug/net10.0/lab6.pdb
 /home/c0rsa/Desktop/PromProg-KB2026/lab6/obj/Debug/net10.0/lab6.genruntimeconfig.cache
 /home/c0rsa/Desktop/PromProg-KB2026/lab6/obj/Debug/net10.0/ref/lab6.dll
+/home/c0rsa/Desktop/PromProg-KB2026/lab6/obj/Debug/net10.0/lab6.sourcelink.json
