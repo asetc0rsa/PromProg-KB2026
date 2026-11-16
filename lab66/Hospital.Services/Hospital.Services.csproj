@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Hospital.BusinessObjects\Hospital.BusinessObjects.csproj" />
+    <ProjectReference Include="..\Hospital.DataLayer\Hospital.DataLayer.csproj" />
+  </ItemGroup>
+</Project>
