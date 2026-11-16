@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\Hospital.BusinessObjects\Hospital.BusinessObjects.csproj" />
+    <ProjectReference Include="..\Hospital.Services\Hospital.Services.csproj" />
+  </ItemGroup>
+</Project>
