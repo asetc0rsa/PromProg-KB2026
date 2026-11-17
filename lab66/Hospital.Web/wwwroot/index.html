@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Больница</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f3f5f8;color:#1d2733}
+header{background:#1f5f8b;color:#fff;padding:14px 24px;font-size:20px}
+main{display:grid;grid-template-columns:340px 1fr;gap:16px;padding:16px;max-width:1300px;margin:auto}
+section{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+h3{margin:0 0 10px}
+label{display:block;font-size:13px;margin:8px 0 2px;color:#556}
+input,select,button{font:inherit;padding:6px 8px;border:1px solid #bcc5d0;border-radius:6px;box-sizing:border-box}
+input,select{width:100%}
+button{background:#1f5f8b;color:#fff;border:0;cursor:pointer;margin-top:10px}
+button.red{background:#b23b3b}
+button.small{margin:0;padding:4px 10px}
+ul{list-style:none;padding:0;margin:12px 0 0}
+li{padding:8px;border-radius:6px;cursor:pointer;border:1px solid #e1e6ec;margin-bottom:6px}
+li.active{background:#e6f0f8;border-color:#1f5f8b}
+.badge{font-size:12px;padding:2px 8px;border-radius:10px;background:#e8eef4;float:right}
+.badge.out{background:#d9f0dc}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+th,td{text-align:left;padding:6px;border-bottom:1px solid #e1e6ec;font-size:14px}
+.row{display:flex;gap:8px;align-items:center}
+.box{border:1px solid #e1e6ec;border-radius:8px;padding:12px;margin-top:14px}
+.muted{color:#778}
+@media print{
+  body{background:#fff}
+  main{display:block;padding:0;max-width:none}
+  main > section:first-child{display:none}
+  section{box-shadow:none;padding:0}
+  .no-print{display:none!important}
+}
+</style>
+</head>
+<body>
+<header>Больница — электронные медицинские карты</header>
+<main>
+<section>
+  <h3>Госпитализация</h3>
+  <details>
+    <summary>Принять нового пациента</summary>
+    <label>Фамилия</label><input id="lastName">
+    <label>Имя</label><input id="firstName">
+    <label>Отчество</label><input id="patronymic">
+    <label>Дата рождения</label><input id="birthDate" type="date">
+    <label>Пол</label><select id="gender"><option>Мужской</option><option>Женский</option></select>
+    <label>Телефон</label><input id="phone">
+    <label>Адрес</label><input id="address">
+    <label>Дежурный врач</label><select id="doctor"></select>
+    <label>Диагноз при поступлении</label><input id="diagnosis">
+    <button onclick="admit()">Госпитализировать</button>
+  </details>
+  <ul id="list"></ul>
+</section>
+<section id="detail"><p class="muted">Выберите пациента в списке слева</p></section>
+</main>
+<script>
+let records = [], staff = [], departments = [], selected = null;
+
+const api = async (url, method = 'GET', body) => {
+  const res = await fetch('/api/' + url, {method, headers: {'Content-Type': 'application/json'}, body: body ? JSON.stringify(body) : undefined});
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(data?.error || 'Ошибка запроса');
+  return data;
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = d => d ? new Date(d).toLocaleString('ru-RU') : '';
+const fmtDate = d => d ? new Date(d).toLocaleDateString('ru-RU') : '';
+const val = id => document.getElementById(id).value;
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+const opts = list => list.map(x => `<option value="${x.id}">${esc(x.name)}${x.specialization ? ' — ' + esc(x.specialization) : ''}</option>`).join('');
+const run = async fn => { try { await fn(); } catch (e) { alert(e.message); } };
+
+async function init() {
+  document.getElementById('birthDate').max = todayIso();
+  [departments, staff] = await Promise.all([api('departments'), api('staff')]);
+  document.getElementById('doctor').innerHTML = opts(staff.filter(s => s.kind === 'doctor' && !s.departmentId));
+  await reload();
+}
+
+async function reload() {
+  records = await api('records');
+  renderList();
+  await renderDetail();
+}
+
+function renderList() {
+  document.getElementById('list').innerHTML = records.map(r => `
+    <li class="${r.id === selected ? 'active' : ''}" onclick="select('${r.id}')">
+      <span class="badge ${r.isDischarged ? 'out' : ''}">${r.isDischarged ? 'выписан' : r.department ? esc(r.department) : 'приёмное'}</span>
+      <b>${esc(r.patientName)}</b><br><span class="muted">${fmtDate(r.admissionDate)}</span>
+    </li>`).join('') || '<p class="muted">Пациентов пока нет</p>';
+}
+
+function select(id) { selected = id; renderList(); run(renderDetail); }
+
+function admit() {
+  const birthDate = val('birthDate');
+  if (!birthDate) { alert('Укажите дату рождения'); return; }
+  if (birthDate > todayIso()) { alert('Дата рождения не может быть позже сегодняшней'); return; }
+  run(async () => {
+    const r = await api('admissions', 'POST', {
+      lastName: val('lastName'), firstName: val('firstName'), patronymic: val('patronymic'),
+      birthDate: birthDate, gender: val('gender'),
+      phone: val('phone'), address: val('address'),
+      doctorId: val('doctor'), diagnosis: val('diagnosis')
+    });
+    selected = r.id;
+    await reload();
+  });
+}
+
+function refer() {
+  run(async () => {
+    await api(`records/${selected}/refer`, 'POST', {departmentId: val('refDept'), doctorId: val('refDoctor')});
+    await reload();
+  });
+}
+
+function deptChanged() {
+  const dept = val('refDept');
+  document.getElementById('refDoctor').innerHTML = opts(staff.filter(s => s.kind === 'doctor' && s.departmentId === dept));
+}
+
+function typeChanged() {
+  const t = val('pKind');
+  document.getElementById('fQty').hidden = t !== 'injection';
+  document.getElementById('fDose').hidden = t !== 'tablet';
+  document.getElementById('fDays').hidden = t !== 'tablet';
+}
+
+function addPrescription() {
+  run(async () => {
+    await api(`records/${selected}/prescriptions`, 'POST', {
+      kind: val('pKind'), name: val('pName'),
+      quantity: +val('pQty') || null, dosage: val('pDose'), days: +val('pDays') || null
+    });
+    await reload();
+  });
+}
+
+function perform(pid) {
+  run(async () => {
+    await api(`records/${selected}/prescriptions/${pid}/perform`, 'POST', {staffId: val('perf-' + pid)});
+    await reload();
+  });
+}
+
+function discharge() {
+  run(async () => {
+    await api(`records/${selected}/discharge`, 'POST');
+    await reload();
+  });
+}
+
+function prescriptionRow(p) {
+  const who = staff.filter(s => s.kind === (p.requiresNurse ? 'nurse' : 'doctor'));
+  const action = p.isDone
+    ? `${esc(p.performedBy)}<br><span class="muted">${fmt(p.doneDate)}</span>`
+    : `<div class="row"><select id="perf-${p.id}">${opts(who)}</select><button class="small" onclick="perform('${p.id}')">Выполнить</button></div>`;
+  return `<tr><td>${esc(p.category)}</td><td>${esc(p.name)}</td><td>${esc(p.details)}</td><td>${p.isDone ? 'выполнено' : 'ожидает'}</td><td>${action}</td></tr>`;
+}
+
+async function renderDetail() {
+  const box = document.getElementById('detail');
+  const r = records.find(x => x.id === selected);
+  if (!r) { box.innerHTML = '<p class="muted">Выберите пациента в списке слева</p>'; return; }
+
+  let html = `<h3>${esc(r.patientName)}</h3>
+    <div>Дата рождения: ${fmtDate(r.birthDate)} · Поступил: ${fmt(r.admissionDate)}</div>
+    <div>Диагноз при поступлении: <b>${esc(r.diagnosis)}</b></div>
+    <div>Отделение: <b>${esc(r.department || 'не назначено')}</b> · Лечащий врач: <b>${esc(r.doctor || 'не назначен')}</b></div>`;
+
+  if (!r.isDischarged && !r.department) {
+    html += `<div class="box"><h3>Направление в отделение</h3>
+      <label>Отделение</label><select id="refDept" onchange="deptChanged()">${opts(departments)}</select>
+      <label>Врач</label><select id="refDoctor"></select>
+      <button onclick="refer()">Направить</button></div>`;
+  }
+
+  if (r.department) {
+    html += `<div class="box"><h3>Лечение</h3>
+      <table><tr><th>Тип</th><th>Назначение</th><th>Детали</th><th>Статус</th><th>Выполнение</th></tr>
+      ${r.prescriptions.map(prescriptionRow).join('') || '<tr><td colspan="5" class="muted">Назначений нет</td></tr>'}</table>`;
+    if (!r.isDischarged) {
+      html += `<h3>Новое назначение</h3>
+        <label>Тип</label><select id="pKind" onchange="typeChanged()">
+          <option value="injection">Инъекция</option><option value="tablet">Таблетки</option>
+          <option value="diagnostic">Диагностическое</option><option value="preventive">Профилактическое</option></select>
+        <label>Название</label><input id="pName">
+        <div id="fQty"><label>Количество инъекций</label><input id="pQty" type="number" min="1"></div>
+        <div id="fDose"><label>Дозировка</label><input id="pDose"></div>
+        <div id="fDays"><label>Дней приёма</label><input id="pDays" type="number" min="1"></div>
+        <button onclick="addPrescription()">Назначить</button>
+        <button class="red" onclick="discharge()">Выписать пациента</button>`;
+    }
+    html += '</div>';
+  }
+
+  if (r.isDischarged) {
+    const s = await api(`records/${r.id}/epicrisis`);
+    html += `<div class="box"><h3>Выписной эпикриз</h3>
+      <div>Пациент: <b>${esc(s.patientName)}</b>, ${fmtDate(s.birthDate)}, ${esc(s.gender)}</div>
+      <div>Адрес: ${esc(s.address)} · Телефон: ${esc(s.phone)}</div>
+      <div>Период пребывания: ${fmtDate(s.admissionDate)} — ${fmtDate(s.dischargeDate)} (${s.days} дн.)</div>
+      <div>Диагноз при поступлении: ${esc(s.diagnosis)}</div>
+      <div>Отделение: ${esc(s.department)} · Врач: ${esc(s.doctor)}</div>
+      <h3 style="margin-top:10px">Выполненные назначения</h3>
+      <ul>${s.performed.map(p => `<li style="cursor:default">${esc(p)}</li>`).join('') || '<li class="muted">нет</li>'}</ul>
+      <button class="no-print" onclick="window.print()">Печать</button></div>`;
+  }
+
+  box.innerHTML = html;
+  if (document.getElementById('refDept')) deptChanged();
+  if (document.getElementById('pKind')) typeChanged();
+}
+
+run(init);
+</script>
+</body>
+</html>
